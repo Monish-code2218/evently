@@ -95,7 +95,7 @@ router.post("/create-stripe-session", async (req, res) => {
           price_data: {
             currency: "usd",
             product_data: {
-              name: req.body[0].item,
+              name: req.body.item,
               description: "Event Ticket",
             },
             unit_amount: req.body[0].Price * 100,

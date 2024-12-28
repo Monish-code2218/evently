@@ -24,7 +24,7 @@ const EventForm = ({ onEventAdd }) => {
         e.preventDefault();
 
         // Create a new event
-        axios.post('http://localhost:1337/add', newEvent)
+        axios.post('https://evently-pphy.onrender.com/add', newEvent)
             .then(response => {
                 onEventAdd(response.data);
                 setNewEvent({ title: '', date: '', price: '' });

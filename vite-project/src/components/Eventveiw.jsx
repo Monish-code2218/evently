@@ -18,7 +18,7 @@ const Eventveiw = () => {
 
     const fetchevent = async () => {
         try {
-            const response = await axios.get(`http://localhost:1337/get/${_id}`);
+            const response = await axios.get(`https://evently-pphy.onrender.com/get/${_id}`);
             setEventveiw(response.data);
         } catch (error) {
             console.error('Error fetching :', error);
@@ -42,7 +42,7 @@ const Eventveiw = () => {
     const handlePayment = async () => {
         const stripePromise = await loadStripe("pk_test_51QZS4USGmF7arXiVyF4xyZxYyGUCUJljwuKwhyMAd4NqZ40Eo9rRQlm4sFJy0ZwffajGgRMvZelMI8qaPP3C2ds5005Zvn7FHx");
         const response = await fetch(
-            "http://localhost:1337/create-stripe-session",
+            "https://evently-pphy.onrender.com/create-stripe-session",
             {
                 method: "POST",
                 headers: { "Content-Type": "Application/JSON" },
