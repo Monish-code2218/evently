@@ -21,7 +21,7 @@ const Login = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post('https://evently-pphy.onrender.com/signin', { email, password });
+            const response = await axios.post('https://evently-2u3t.onrender.com/signin', { email, password });
             localStorage.setItem('token', response.data.token);
             setToast({
                 open: true,

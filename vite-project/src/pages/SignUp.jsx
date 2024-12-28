@@ -12,7 +12,7 @@ const Signup = () => {
   const handleSignup = async (e) => {
     e.preventDefault();
    try{
-    const response = await axios.post('https://evently-pphy.onrender.com/signup', { email, password });
+    const response = await axios.post('https://evently-2u3t.onrender.com/signup', { email, password });
     localStorage.setItem('token', response.data.token);
     console.log('Signup successful:', response.data);
     navigate('/login');

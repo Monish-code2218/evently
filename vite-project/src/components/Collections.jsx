@@ -10,7 +10,7 @@ const Events = () => {
 
   useEffect(() => {
     axios
-      .get("hhttps://evently-pphy.onrender.com/getAll")
+      .get("https://evently-2u3t.onrender.com/getAll")
       .then((response) => {
         setEvents(response.data);
       })
