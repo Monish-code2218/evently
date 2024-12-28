@@ -18,7 +18,7 @@ const Eventveiw = () => {
 
     const fetchevent = async () => {
         try {
-            const response = await axios.get(`https://evently-2u3t.onrender.com/get/${_id}`);
+            const response = await axios.get(`https://evently-2u3t.onrender.comget/${_id}`);
             setEventveiw(response.data);
         } catch (error) {
             console.error('Error fetching :', error);
