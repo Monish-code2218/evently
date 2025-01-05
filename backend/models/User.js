@@ -12,8 +12,9 @@ var userSchema = new Schema({
       type: String,
       // match: /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/,
       // required: true,
-      // unique: true,
+       unique: true,
       lowercase: true,
+      index: true,
     },
     password: {
       type: String,

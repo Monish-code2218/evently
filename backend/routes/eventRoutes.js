@@ -4,9 +4,19 @@ const express = require("express");
 const router = express.Router();
 const app = express();
 const Event = require("../models/Event");
-const stripe = require('stripe')(process.env.STRIPE_SECRET);
-require('dotenv').config();
 
+require('dotenv').config();
+const bodyParser = require("body-parser");
+
+const { PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET, } = process.env;
+const {
+    ApiError,
+    CheckoutPaymentIntent,
+    Client,
+    Environment,
+    LogLevel,
+    OrdersController,
+} = require("@paypal/paypal-server-sdk")
 
 
 
@@ -59,18 +69,19 @@ router.delete("/delete/:id", async (req, res) => {
 
 router.put("/update/:id", async (req, res) => {
     const eventId = req.params.id;
-    const { title, date, location, remind } = req.body;
+   const{title, date, description, price,image} = req.body;
 
     try {
         const event = await Event.findById(eventId);
         if (!event) {
             return res.status(404).json({ message: "Event not found" });
         }
-
+z
         event.title = title;
         event.date = date;
-        event.location = location;
-        event.remind = remind;
+        event.description = description;
+        event.Price = price;
+        event.image = image;
 
         await event.save();
         console.log(event);
@@ -83,37 +94,116 @@ router.put("/update/:id", async (req, res) => {
 
 
 
-router.post("/create-stripe-session", async (req, res) => {
 
-    const session = await stripe.checkout.sessions.create({
 
-      payment_method_types: ["card"],
-
-      line_items: [
-
-        {
-          price_data: {
-            currency: "usd",
-            product_data: {
-              name: req.body.item,
-              description: "Event Ticket",
-            },
-            unit_amount: req.body.Price * 100,
-          },
-          quantity: 1,
-          
-        },
-      ],
-      mode: "payment",
-      success_url: "http://localhost:5173/success",
-      cancel_url: "http://localhost:5173/failed",
-     
-    });
-    
-    res.json({ id: session.id });
+  const client = new Client({
+    clientCredentialsAuthCredentials: {
+      oAuthClientId: PAYPAL_CLIENT_ID,
+      oAuthClientSecret: PAYPAL_CLIENT_SECRET,
+    },
+    timeout: 0,
+    environment: Environment.Sandbox,
+    logging: {
+      logLevel: LogLevel.Info,
+      logRequest: {
+        logBody: true,
+      },
+      logResponse: {
+        logHeaders: true,
+      },
+    },
   });
-
-
+  
+  const ordersController = new OrdersController(client);
+  
+  /**
+   * Create an order to start the transaction.
+   * @see https://developer.paypal.com/docs/api/orders/v2/#orders_create
+   */
+  const createOrder = async (cart) => {
+    const collect = {
+      body: {
+        intent: CheckoutPaymentIntent.Capture,
+        purchaseUnits: [
+          {
+            amount: {
+              currencyCode: "USD",
+              value: req.body.price,
+            },
+          },
+        ],
+      },
+      prefer: "return=minimal",
+    };
+  
+    try {
+      const { body, ...httpResponse } = await ordersController.ordersCreate(
+        collect
+      );
+      // Get more response info...
+      // const { statusCode, headers } = httpResponse;
+      return {
+        jsonResponse: JSON.parse(body),
+        httpStatusCode: httpResponse.statusCode,
+      };
+    } catch (error) {
+      if (error instanceof ApiError) {
+        // const { statusCode, headers } = error;
+        throw new Error(error.message);
+      }
+    }
+  };
+  
+  /**
+   * Capture payment for the created order to complete the transaction.
+   * @see https://developer.paypal.com/docs/api/orders/v2/#orders_capture
+   */
+  const captureOrder = async (orderID) => {
+    const collect = {
+      id: orderID,
+      prefer: "return=minimal",
+    };
+  
+    try {
+      const { body, ...httpResponse } = await ordersController.ordersCapture(
+        collect
+      );
+      // Get more response info...
+      // const { statusCode, headers } = httpResponse;
+      return {
+        jsonResponse: JSON.parse(body),
+        httpStatusCode: httpResponse.statusCode,
+      };
+    } catch (error) {
+      if (error instanceof ApiError) {
+        // const { statusCode, headers } = error;
+        throw new Error(error.message);
+      }
+    }
+  };
+  
+  router.post("/api/orders", async (req, res) => {
+    try {
+      // use the cart information passed from the front-end to calculate the order amount detals
+      const { cart } = req.body;
+      const { jsonResponse, httpStatusCode } = await createOrder(cart);
+      res.status(httpStatusCode).json(jsonResponse);
+    } catch (error) {
+      console.error("Failed to create order:", error);
+      res.status(500).json({ error: "Failed to create order." });
+    }
+  });
+  
+  router.post("/api/orders/:orderID/capture", async (req, res) => {
+    try {
+      const { orderID } = req.params;
+      const { jsonResponse, httpStatusCode } = await captureOrder(orderID);
+      res.status(httpStatusCode).json(jsonResponse);
+    } catch (error) {
+      console.error("Failed to create order:", error);
+      res.status(500).json({ error: "Failed to capture order." });
+    }
+  });
 
 
 

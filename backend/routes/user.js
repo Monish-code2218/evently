@@ -12,6 +12,8 @@ router.route("/signup").post(UserController.signUp);
 
 router.route("/signin").post(authenticate("local"), UserController.signIn);
 
+router.route("/users").get(UserController.getUserIsLogin);
+
 router
   .route("/google")
   .post(authenticate("googleToken"), UserController.signIn);

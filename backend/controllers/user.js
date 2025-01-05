@@ -1,6 +1,7 @@
 const JWT = require("jsonwebtoken");
 let User = require("../models/User");
 
+
 signToken = (user) => {
   return JWT.sign(
     {
@@ -24,14 +25,14 @@ module.exports = {
     }
 
     foundUser = await User.findOne({
-      $or: [{ "google.email": email }, { "facebook.email": email }],
+      $or: [{ "google.email": email }],
     });
     if (foundUser) {
       // Let's merge them?
       foundUser.methods.push("local");
       foundUser.local = {
-        email: email,
-        password: password,
+        email: req.body.email,
+        password: req.body.password,
       };
       await foundUser.save();
       // Generate the token
@@ -141,5 +142,26 @@ module.exports = {
       console.error(error);
       res.status(500).json({ message: "Internal Server Error" });
     }
+  },
+
+  getUserIsLogin: async (req, res) => {
+    try {
+      const user = {
+        email: req.user.email,
+
+      }
+      res.status(200).json({ user });
+      console.log(req.user)
+    }
+    catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Internal Server Error" });
+    }
+
   }
-};
+}
+
+
+
+
+

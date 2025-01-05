@@ -10,6 +10,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@paypal/paypal-server-sdk": "^0.6.1",
+    "@paypal/react-paypal-js": "^8.7.0",
     "@stripe/stripe-react-native": "^0.41.0",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.20.3",
@@ -20,6 +22,7 @@
     "express-validator": "^7.2.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.9.2",
+    "node-fetch": "^3.3.2",
     "nodemailer": "^6.9.16",
     "passport": "^0.7.0",
     "passport-google-token": "^0.1.2",
