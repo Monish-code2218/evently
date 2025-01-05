@@ -15,7 +15,10 @@ Built on MERN, the events application stands as a comprehensive, full-stack plat
 
 If you're getting started and need assistance or face any bugs, join our active Discord community with over 27k+ members. It's a place where people help each other out.
 
+admin login
 
+email:monishrao011@gmail.com
+pass:monish@123
 
 ## <a name="tech-stack">⚙️ Tech Stack</a>
 
